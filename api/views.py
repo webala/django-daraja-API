@@ -1,3 +1,4 @@
+from urllib import response
 import requests
 from django.shortcuts import render
 from api.serializers import MakePaymentSerializer
@@ -22,3 +23,41 @@ class InitiateSTKPush(GenericAPIView):
         requestData = request.data
         amount = requestData.get('amount')
         phone = requestData.get('phone_number')
+
+    def initiate_mpesa_stk(self, amount:str, phone:str) -> dict:
+        access_token = generate_token()
+        formated_time = format_date_time()
+        password = generate_password(formated_time)
+
+        headers ={
+            'Authorisation': 'Bearer %s' % access_token
+        }
+
+        payload = {    
+            "BusinessShortCode":"174379",    
+            "Password": password,    
+            "Timestamp": formated_time,    
+            "TransactionType": "CustomerPayBillOnline",    
+            "Amount":amount,    
+            "PartyA":phone,    
+            "PartyB":"174379",    
+            "PhoneNumber":phone,    
+            "CallBackURL":"https://webhook.site/4281823d-4ad3-455b-bdb4-a8007e9459ad",    
+            "AccountReference":"ONLINE PAYMENT LIMITED",    
+            "TransactionDesc":"Make Payment"
+        }
+
+        response = requests.post(
+            settings.API_RESOURE_URL, headers=headers, json=payload
+        )
+
+        string_response = response.text
+        string_object = json.loads(string_response)
+
+        if 'errorCode' in string_object:
+            print('Error: ', string_object)
+            return string_object
+        else:
+            merchant_request_id = string_object['MerchantRequestID']
+            chechout_request_id = string_object['CheckoutRequestID']
+            response_code = string_object
