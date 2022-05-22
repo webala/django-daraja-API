@@ -1,5 +1,5 @@
 import base64
-from django.cong import settings
+from django.conf import settings
 
 def generate_password(dates):
     data_to_encode = settings.BUSINESS_SHORT_CODE + settings.LIPANAMPESA_PASSKEY + dates

@@ -25,6 +25,8 @@ class InitiateSTKPush(GenericAPIView):
         phone = requestData.get('phone_number')
 
         payment_response = self.initiate_mpesa_stk(amount, phone)
+        print(payment_response)
+        return Response(payment_response)
 
     def initiate_mpesa_stk(self, amount:str, phone:str) -> dict:
         access_token = generate_token()
@@ -32,7 +34,7 @@ class InitiateSTKPush(GenericAPIView):
         password = generate_password(formated_time)
 
         headers ={
-            'Authorisation': 'Bearer %s' % access_token
+            'Authorization': 'Bearer %s' % access_token
         }
 
         payload = {    
@@ -44,7 +46,7 @@ class InitiateSTKPush(GenericAPIView):
             "PartyA":phone,    
             "PartyB":"174379",    
             "PhoneNumber":phone,    
-            "CallBackURL":"https://webhook.site/4281823d-4ad3-455b-bdb4-a8007e9459ad",    
+            "CallBackURL":"https://posthere.io/08b5-411f-8389",    
             "AccountReference":"ONLINE PAYMENT LIMITED",    
             "TransactionDesc":"Make Payment"
         }
@@ -61,10 +63,11 @@ class InitiateSTKPush(GenericAPIView):
             return string_object
         else:
             data = {
-            merchant_request_id :string_object['MerchantRequestID'],
-            chechout_request_id :string_object['CheckoutRequestID'],
-            response_code :string_object['ResponseCode'],
-            response_description :string_object['ResponseDescription'],
-            customer_meaasge :string_object['CustomerMessage'],
+                'merchant_request_id' :string_object['MerchantRequestID'],
+                'chechout_request_id' :string_object['CheckoutRequestID'],
+                'response_code' :string_object['ResponseCode'],
+                'response_description' :string_object['ResponseDescription'],
+                'customer_meaasge' :string_object['CustomerMessage'],
             }
-            return data
+        
+        return data
