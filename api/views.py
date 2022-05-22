@@ -24,6 +24,8 @@ class InitiateSTKPush(GenericAPIView):
         amount = requestData.get('amount')
         phone = requestData.get('phone_number')
 
+        payment_response = self.initiate_mpesa_stk(amount, phone)
+
     def initiate_mpesa_stk(self, amount:str, phone:str) -> dict:
         access_token = generate_token()
         formated_time = format_date_time()
@@ -58,6 +60,11 @@ class InitiateSTKPush(GenericAPIView):
             print('Error: ', string_object)
             return string_object
         else:
-            merchant_request_id = string_object['MerchantRequestID']
-            chechout_request_id = string_object['CheckoutRequestID']
-            response_code = string_object
+            data = {
+            merchant_request_id :string_object['MerchantRequestID'],
+            chechout_request_id :string_object['CheckoutRequestID'],
+            response_code :string_object['ResponseCode'],
+            response_description :string_object['ResponseDescription'],
+            customer_meaasge :string_object['CustomerMessage'],
+            }
+            return data
